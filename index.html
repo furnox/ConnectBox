@@ -78,48 +78,20 @@ angular.module('index', ['ng'])
     .controller('IndexController', ['$http', '$location', '$scope', '$window', '$timeout',
         function ($http, $location, $scope, window, $timeout, FILES_BASE_URL) {
             var self = this;
-        
+
             this.config = null;
-            this.sort = {
-                rev: false,
-                name: null,
-                reset: function () {
-                    this.rev = false;
-                    this.name = null;
-        
-                    this.save();
-                },
-                toggle: function (col, rev) {
-                    if (this.name == col) {
-                        this.rev = !this.rev;
-                    } else {
-                        this.name = col;
-                        this.rev = rev;
-                    }
-        
-                    this.save();
-                },
-                save: function () {
-                    window.localStorage.setItem('sortName', this.name || '');
-                    window.localStorage.setItem('sortRev', this.rev? '1': '');
-                },
-                load: function () {
-                    this.name = window.localStorage.getItem('sortName');
-                    this.rev = !!window.localStorage.getItem('sortRev');
-                }
-            };
-        
+
             this.files = [];
-        
+
             this.loading = {
                 running: false,
                 timer: null,
                 start: function (timeout) {
                     if (timeout == undefined) { timeout = 500; }
-        
+
                     var self = this;
                     this.stop();
-        
+
                     if (timeout > 0) {
                         this.timer = $timeout(function () {
                             self.running = true;
@@ -134,7 +106,7 @@ angular.module('index', ['ng'])
                     this.running = false;
                 }
             };
-        
+
             this.go_up = function () {
                 var lastSlash = self.path.lastIndexOf('/');
                 if (lastSlash < 0) {
@@ -143,53 +115,58 @@ angular.module('index', ['ng'])
                     $location.path(self.path.substring(0, lastSlash));
                 }
             };
-        
+
             this.reloading = {
                 running: false,
                 start: function (timeout) {
                     this.timer && $timeout.cancel(this.timer);
                     this.running = true;
-        
+
                     var self = this;
                     this.timer = $timeout(function () {
                         self.running = false;
                     }, timeout || 1000);
                 }
             };
-        
+
             this.reload = function () {
                 self.reloading.start();
                 load_folder(self.path);
             };
-        
+
             function load_folder(path) {
                 self.error = null;
                 self.loading.start();
-        
-                return $http({
-                    method: 'GET',
-                    url: self.config.base_index_url + (path || '') + (self.config.tail_slash? '/': '')
-                }).then(function (response) {
-                    var files = response.data || [];
-        
-                    for (var i = 0, l = files.length; i < l; i++) {
-                        files[i].mtime = new Date(files[i].mtime);
+
+                return $http(
+                    {
+                        method: 'GET',
+                        url: self.config.base_index_url + (path || '') + (self.config.tail_slash? '/': '')
                     }
-        
-                    self.files = files;
-                    self.loading.stop();
-        
-                    window.localStorage.setItem('lastPath', path);
-                    window.scrollTo(0, 0);
-                }, function (response) {
-                    self.error = response;
-                    self.loading.stop();
-                    window.scrollTo(0, 0);
-                });
+                ).then(
+                    function (response) {
+                        var files = response.data || [];
+
+                        for (var i = 0, l = files.length; i < l; i++) {
+                            files[i].mtime = new Date(files[i].mtime);
+                        }
+
+                        self.files = files;
+                        self.loading.stop();
+
+                        window.localStorage.setItem('lastPath', path);
+                        window.scrollTo(0, 0);
+                    },
+                    function (response) {
+                        self.error = response;
+                        self.loading.stop();
+                        window.scrollTo(0, 0);
+                    }
+                );
             }
-        
+
             function path_parts(path) {
-                var parts = (path == '/'? '': path).split('/'), up = '', path;
+                var parts = (path == '/'? '': path).split('/'), up = '';
                 for (var i = 0, l = parts.length; i < l; i++) {
                     path = up + parts[i];
                     up = path + '/';
@@ -197,22 +174,24 @@ angular.module('index', ['ng'])
                 }
                 return parts;
             }
-        
+
             function initialize() {
-                self.sort.load();
                 self.loading.start();
-        
+
                 self.config = {
-                    base_index_url: "http://170.20.4.253",
+                    base_index_url: "content",
                     tail_slash: false
                 };
-        
-                $scope.$on('$locationChangeSuccess', function () {
-                    self.path_parts = path_parts(self.path = $location.path());
-                    if (self.path == '/') self.path = '';
-                    load_folder(self.path);
-                });
-        
+
+                $scope.$on('$locationChangeSuccess',
+                    function () {
+                        console.debug($location);
+                        self.path_parts = path_parts(self.path = $location.path());
+                        if (self.path == '/') self.path = '';
+                        load_folder(self.path);
+                    }
+                );
+
                 var path;
                 if ($location.path() === '' && (path = window.localStorage.getItem('lastPath'))) {
                     $location.path(path);
@@ -220,7 +199,7 @@ angular.module('index', ['ng'])
                     $scope.$broadcast('$locationChangeSuccess');
                 }
             }
-        
+
             initialize();
         }
     ])
@@ -228,7 +207,7 @@ angular.module('index', ['ng'])
         function (window, $scope) {
             var self = this;
             this.show = false;
-        
+
             var scrollDebounce = null;
             window.addEventListener('scroll', function () {
                 scrollDebounce && clearTimeout(scrollDebounce);
@@ -237,18 +216,18 @@ angular.module('index', ['ng'])
                     $scope.$digest();
                 }, 500);
             });
-        
+
             var scrollTicker;
             this.to_top = function () {
                 scrollTicker && clearInterval(scrollTicker);
-        
+
                 scrollTicker = setInterval(function () {
                     var y = 0.6 * window.scrollY;
                     if (y < 100) {
                         y = 0;
                         clearInterval(scrollTicker);
                     }
-        
+
                     window.scrollTo(0, y);
                 }, 10);
             };
