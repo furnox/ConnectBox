@@ -4,6 +4,7 @@
         <title>ConnectBox</title>
         <script src="lib/angular.min.js"></script>
         <link type="text/css" rel="stylesheet" href="lib/bootstrap.min.css" />
+        <link type="text/css" rel="stylesheet" href="lib/font-awesome.min.css" />
         <meta charset="utf-8" />
         <style>
             .ng-cloak { display: none !important; }
@@ -55,7 +56,8 @@
                             <td></td>
                         </tr>
                         <tr ng-repeat="row in index.files | orderBy:index.sort.name:index.sort.rev">
-                            <td><a href="{{:: row.type == 'directory' ? '#' : index.config.base_index_url }}{{:: index.path }}/{{:: row.name }}"><i class="glyphicon" ng-class="::{ 'glyphicon-folder-close': row.type == 'directory', 'glyphicon-file': row.type == 'file', 'glyphicon-question-sign': row.type == 'other' }"></i> {{:: row.name }}</a></td>
+                            <td><a href="{{:: row.type == 'directory' ? '#' : index.config.base_index_url }}{{:: index.path }}/{{:: row.name }}"><i class="fa {{:: row.name | topLevelCategory }}"></i> {{:: row.name }}</a></td>
+                            <!--<td><a href="{{:: row.type == 'directory' ? '#' : index.config.base_index_url }}{{:: index.path }}/{{:: row.name }}"><i class="glyphicon" ng-class="::{ 'glyphicon-folder-close': row.type == 'directory', 'glyphicon-file': row.type == 'file', 'glyphicon-question-sign': row.type == 'other' }"></i> {{:: row.name }}</a></td>-->
                             <td>{{:: row.mtime | date:'short' }}</td>
                             <td><span title="{{:: row.size }}" ng-bind=":: row.size | humanize" ng-if=":: row.size != undefined"></span></td>
                         </tr>
@@ -76,7 +78,7 @@
         <script>
 angular.module('index', ['ng'])
     .controller('IndexController', ['$http', '$location', '$scope', '$window', '$timeout',
-        function ($http, $location, $scope, window, $timeout, FILES_BASE_URL) {
+        function($http, $location, $scope, window, $timeout, FILES_BASE_URL) {
             var self = this;
 
             this.config = null;
@@ -204,7 +206,7 @@ angular.module('index', ['ng'])
         }
     ])
     .controller('ScrollToTopController', ['$window', '$scope',
-        function (window, $scope) {
+        function(window, $scope) {
             var self = this;
             this.show = false;
 
@@ -234,7 +236,7 @@ angular.module('index', ['ng'])
         }
     ])
     .filter('humanize',
-        function () {
+        function() {
             return function humanize(number) {
                 if(number < 1024) {
                     return number + ' bytes';
@@ -244,6 +246,46 @@ angular.module('index', ['ng'])
                 var result = number / Math.pow(1024, exp);
                 result = (result % 1 > (1 / Math.pow(1024, exp - 1))) ? result.toFixed(2) : result.toFixed(0);
                 return result + ' ' + si[exp - 1] + 'ib';
+            };
+        }
+    )
+    .filter('topLevelCategory',
+        function() {
+            return function topLevelCategory(dirName) {
+                var picto='';
+                switch (dirName) {
+                    case 'medical':
+                        picto = 'fa-medkit';
+                        break;
+                    case 'video':
+                        picto = 'fa-video-camera';
+                        break;
+                    case 'wifi':
+                        picto = 'fa-wifi';
+                        break;
+                    case 'music':
+                        picto = 'fa-music';
+                        break;
+                    case 'government':
+                        picto = 'fa-id-card';
+                        break;
+                    case 'water':
+                        picto = 'fa-tint';
+                        break;
+                    case 'food':
+                        picto = 'fa-cutlery';
+                        break;
+                    case 'written':
+                        picto = 'fa-book';
+                        break;
+                    case 'power':
+                        picto = 'fa-bolt';
+                        break;
+                    case 'maps':
+                        picto = 'fa-map';
+                        break;
+                }
+                return picto;
             };
         }
     );
