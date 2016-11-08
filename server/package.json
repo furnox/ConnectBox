@@ -1,0 +1,11 @@
+{
+  "name": "connect_box_server",
+  "version": "1.0.0",
+  "description": "Server side component to ConnectBox client",
+  "main": "file_server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Travis Bretton",
+  "license": "ISC"
+}
