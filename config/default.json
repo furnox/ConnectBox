@@ -1,0 +1,12 @@
+{
+	"Content":{
+		"contentBase":"/var/connectbox/content",
+		"contentRoute":"/content"
+	},
+	"Server":{
+		"port":80
+	},
+	"Client":{
+		"tail_slash":false
+	}
+}

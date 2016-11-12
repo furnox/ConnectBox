@@ -1,7 +1,0 @@
-{
-	"Server":{
-		"contentBase":"",
-		"contentRoute":"/content",
-		"port":80
-	}
-}
