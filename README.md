@@ -28,6 +28,7 @@ Server
 1. [Download](https://nodejs.org/en/) and install Node.js and NPM on target system.
 1. Install this package somewhere
 1. Edit `config/default.config`. Set `contentBase` to the base, file system location of the content to be served. Config `contentRoute` is the URL path at which content is served. The client will also use `contentRoute` to request content files and directory listings. Choose a different `port` if you don't want the server to listen on port 80.
+
 	```json
 	{
 		"Content":{
@@ -43,6 +44,7 @@ Server
 	}
 	```
 1. Navigate to the `server` directory and get dependencies
+
 	```shell
 	$ npm install
 	```
@@ -50,10 +52,12 @@ Server
 
 #### Running
 1. All that is left is to run `file_server.js` with Node. Since the server is, by default, listening to port 80, root priviledges will be needed to execute the server.
+
 	```shell
 	$ sudo NODE_CONFIG_DIR="../config/" node file_server.js
 	```
 	The `NODE_CONFIG_DIR` env variable sets the directory with the configuration files. If you want to enable debug logging, set the DEBUG env variable
+
 	```shell
 	$ sudo DEBUG="connectbox" NODE_CONFIG_DIR="../config/" node file_server.js
 	```
