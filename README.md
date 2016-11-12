@@ -29,33 +29,33 @@ Server
 1. Install this package somewhere
 1. Edit `config/default.config`. Set `contentBase` to the base, file system location of the content to be served. Config `contentRoute` is the URL path at which content is served. The client will also use `contentRoute` to request content files and directory listings. Choose a different `port` if you don't want the server to listen on port 80.
 	```json
-{
-	"Content":{
-		"contentBase":"/var/connectbox/content",
-		"contentRoute":"/content"
-	},
-	"Server":{
-		"port":80
-	},
-	"Client":{
-		"tail_slash":false
+	{
+		"Content":{
+			"contentBase":"/var/connectbox/content",
+			"contentRoute":"/content"
+		},
+		"Server":{
+			"port":80
+		},
+		"Client":{
+			"tail_slash":false
+		}
 	}
-}
 	```
 1. Navigate to the `server` directory and get dependencies
 	```shell
-$ npm install
+	$ npm install
 	```
 	This will install the dependencies listed in `package.json`
 
 #### Running
 1. All that is left is to run `file_server.js` with Node. Since the server is, by default, listening to port 80, root priviledges will be needed to execute the server.
 	```shell
-$ sudo NODE_CONFIG_DIR="../config/" node file_server.js
+	$ sudo NODE_CONFIG_DIR="../config/" node file_server.js
 	```
 	The `NODE_CONFIG_DIR` env variable sets the directory with the configuration files. If you want to enable debug logging, set the DEBUG env variable
 	```shell
-$ sudo DEBUG="connectbox" NODE_CONFIG_DIR="../config/" node file_server.js
+	$ sudo DEBUG="connectbox" NODE_CONFIG_DIR="../config/" node file_server.js
 	```
 1. Request the client by navigating to the web root of the server. The client and all support files will download.
 
